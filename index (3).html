@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>استبيان اختيار التخصص - السنة الثالثة ليسانس</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Amiri:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --dark-green:#0b3d2e;
+    --mid-green:#145c43;
+    --gold:#c9a24b;
+    --light-gold:#f3e6c8;
+    --bg:#f7f5f0;
+    --text:#1c1c1c;
+    --danger:#a83232;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Tajawal', sans-serif;
+    background:linear-gradient(160deg,var(--bg) 0%, #eef1ec 100%);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:24px 12px;
+  }
+  .card{
+    width:100%;
+    max-width:640px;
+    background:#fff;
+    border-radius:18px;
+    box-shadow:0 10px 30px rgba(11,61,46,0.15);
+    overflow:hidden;
+    border:1px solid #e4e0d4;
+  }
+  .header{
+    background:linear-gradient(135deg,var(--dark-green), var(--mid-green));
+    color:#fff;
+    padding:28px 24px 22px;
+    text-align:center;
+    position:relative;
+  }
+  .header::after{
+    content:"";
+    position:absolute;
+    bottom:0; left:0; right:0;
+    height:5px;
+    background:var(--gold);
+  }
+  .header h1{
+    margin:0 0 6px;
+    font-size:22px;
+    font-weight:900;
+  }
+  .header p{
+    margin:0;
+    font-size:14px;
+    opacity:0.9;
+    line-height:1.7;
+  }
+  .body{ padding:26px 24px 10px; }
+  .field{ margin-bottom:20px; }
+  label{
+    display:block;
+    font-weight:700;
+    margin-bottom:8px;
+    font-size:15px;
+    color:var(--dark-green);
+  }
+  input[type=text]{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    border:1.5px solid #dcd7c9;
+    font-family:'Tajawal', sans-serif;
+    font-size:15px;
+    background:#fbfaf7;
+    transition:.2s;
+  }
+  input[type=text]:focus{
+    outline:none;
+    border-color:var(--mid-green);
+    background:#fff;
+  }
+  .options{ display:flex; flex-direction:column; gap:14px; }
+  .option{
+    border:2px solid #e4e0d4;
+    border-radius:14px;
+    padding:16px 16px;
+    cursor:pointer;
+    transition:.2s;
+    position:relative;
+    background:#fdfcfa;
+  }
+  .option:hover{ border-color:var(--gold); }
+  .option.selected{
+    border-color:var(--mid-green);
+    background:linear-gradient(135deg, #eef7f2, #fbf8ef);
+    box-shadow:0 4px 14px rgba(20,92,67,0.12);
+  }
+  .option-top{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:6px;
+  }
+  .radio-dot{
+    width:20px; height:20px;
+    border-radius:50%;
+    border:2px solid #bdb8a4;
+    flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    transition:.2s;
+  }
+  .option.selected .radio-dot{ border-color:var(--mid-green); }
+  .radio-dot::after{
+    content:"";
+    width:10px;height:10px;
+    border-radius:50%;
+    background:var(--mid-green);
+    transform:scale(0);
+    transition:.2s;
+  }
+  .option.selected .radio-dot::after{ transform:scale(1); }
+  .option-title{ font-weight:900; font-size:16px; color:var(--dark-green); }
+  .badge{
+    font-size:11px;
+    background:var(--gold);
+    color:#fff;
+    padding:2px 10px;
+    border-radius:20px;
+    font-weight:700;
+    margin-inline-start:auto;
+  }
+  .option-desc{
+    font-size:13.5px;
+    line-height:1.9;
+    color:#4a4a4a;
+    margin-inline-start:30px;
+  }
+  .submit-btn{
+    width:100%;
+    padding:15px;
+    background:linear-gradient(135deg,var(--dark-green), var(--mid-green));
+    color:#fff;
+    border:none;
+    border-radius:12px;
+    font-size:16px;
+    font-weight:700;
+    font-family:'Tajawal', sans-serif;
+    cursor:pointer;
+    margin:22px 0 8px;
+    transition:.2s;
+  }
+  .submit-btn:hover{ filter:brightness(1.08); }
+  .submit-btn:disabled{ opacity:.55; cursor:not-allowed; }
+  .error-msg{
+    color:var(--danger);
+    font-size:13px;
+    margin-top:-8px;
+    margin-bottom:14px;
+    display:none;
+    font-weight:700;
+  }
+  .footer-note{
+    text-align:center;
+    font-size:12px;
+    color:#8a8a8a;
+    padding:8px 24px 22px;
+  }
+  /* success screen */
+  .success{
+    display:none;
+    padding:50px 30px;
+    text-align:center;
+  }
+  .success .check{
+    width:70px;height:70px;
+    border-radius:50%;
+    background:var(--mid-green);
+    color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:34px;
+    margin:0 auto 18px;
+  }
+  .success h2{ color:var(--dark-green); margin:0 0 10px; }
+  .success p{ color:#555; font-size:14px; line-height:1.8; margin:0 0 4px;}
+  .success .chosen{
+    display:inline-block;
+    margin-top:14px;
+    background:var(--light-gold);
+    color:var(--dark-green);
+    padding:8px 18px;
+    border-radius:30px;
+    font-weight:700;
+    font-size:14px;
+  }
+
+  /* admin panel */
+  .admin-toggle{
+    text-align:center;
+    font-size:12px;
+    color:#aaa;
+    margin-top:14px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .admin-panel{
+    display:none;
+    margin:16px 24px 24px;
+    border-top:1px dashed #ddd;
+    padding-top:16px;
+  }
+  .admin-panel h3{ font-size:14px; color:var(--dark-green); margin-bottom:10px;}
+  .stat-row{
+    display:flex;
+    justify-content:space-between;
+    background:#f7f5f0;
+    padding:10px 14px;
+    border-radius:8px;
+    margin-bottom:8px;
+    font-size:13.5px;
+  }
+  .stat-row b{ color:var(--mid-green); }
+  .loading{ text-align:center; color:#999; font-size:13px; padding:20px; }
+
+  /* admin password modal */
+  .admin-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(11,61,46,0.45);
+    align-items:center;
+    justify-content:center;
+    z-index:999;
+    padding:16px;
+  }
+  .admin-modal{
+    background:#fff;
+    border-radius:16px;
+    padding:26px 22px;
+    width:100%;
+    max-width:340px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.25);
+    text-align:center;
+  }
+  .admin-modal h3{
+    margin:0 0 16px;
+    color:var(--dark-green);
+    font-size:16px;
+  }
+  .admin-modal input{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    border:1.5px solid #dcd7c9;
+    font-family:'Tajawal', sans-serif;
+    font-size:16px;
+    text-align:center;
+    letter-spacing:3px;
+    margin-bottom:6px;
+  }
+  .admin-modal input:focus{ outline:none; border-color:var(--mid-green); }
+  .modal-btns{
+    display:flex;
+    gap:10px;
+    margin-top:16px;
+  }
+  .modal-btns button{
+    flex:1;
+    padding:11px;
+    border-radius:10px;
+    border:none;
+    font-family:'Tajawal', sans-serif;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .cancel-btn{ background:#eee; color:#555; }
+  .confirm-btn{ background:var(--mid-green); color:#fff; }
+
+  .download-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--gold);
+    color:#fff;
+    border:none;
+    padding:11px 18px;
+    border-radius:10px;
+    font-family:'Tajawal', sans-serif;
+    font-weight:700;
+    font-size:13.5px;
+    cursor:pointer;
+    margin-top:12px;
+  }
+  .download-btn:hover{ filter:brightness(1.06); }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <div class="header">
+    <h1>استبيان اختيار التخصص</h1>
+    <p>السنة الثالثة ليسانس – تخصص قانون عام / قانون خاص<br>مركز الجزائر الشرق - ديدوش مراد</p>
+  </div>
+
+  <div id="formView">
+    <div class="body">
+      <div class="field">
+        <label for="fullName">الاسم واللقب</label>
+        <input type="text" id="fullName" placeholder="مثال: أحمد بن علي">
+        <div class="error-msg" id="nameError">الرجاء إدخال الاسم واللقب</div>
+      </div>
+
+      <div class="field">
+        <label for="regNumber">رقم التسجيل (اختياري)</label>
+        <input type="text" id="regNumber" placeholder="رقم التسجيل">
+      </div>
+
+      <div class="field">
+        <label>اختر التخصص الذي ترغب في الالتحاق به</label>
+        <div class="options">
+
+          <div class="option" id="opt1" onclick="selectOption(1)">
+            <div class="option-top">
+              <div class="radio-dot"></div>
+              <span class="option-title">التخصص الأول: الشفافية ومكافحة الفساد</span>
+            </div>
+            <div class="option-desc">
+              يركز هذا التخصص على آليات الحوكمة الرشيدة، النزاهة الإدارية، وأدوات الوقاية من الفساد ومكافحته في القطاعين العام والخاص.
+            </div>
+          </div>
+
+          <div class="option" id="opt2" onclick="selectOption(2)">
+            <div class="option-top">
+              <div class="radio-dot"></div>
+              <span class="option-title">التخصص الثاني: قانون الأعمال</span>
+            </div>
+            <div class="option-desc">
+              يهتم هذا التخصص بالقواعد القانونية المنظمة للنشاط الاقتصادي والتجاري، والشركات، والعقود، والمنازعات التجارية.
+            </div>
+          </div>
+
+        </div>
+        <div class="error-msg" id="choiceError">الرجاء اختيار تخصص واحد</div>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" onclick="submitSurvey()">إرسال الإجابة</button>
+    </div>
+    <div class="footer-note">سيتم تسجيل إجابتك بشكل نهائي بعد الإرسال</div>
+  </div>
+
+  <div class="success" id="successView">
+    <div class="check">✓</div>
+    <h2>تم تسجيل إجابتك بنجاح</h2>
+    <p>شكرًا لك على المشاركة في الاستبيان.</p>
+    <div class="chosen" id="chosenText"></div>
+  </div>
+
+  <div class="admin-toggle" onclick="toggleAdmin()">عرض النتائج الإجمالية (للإدارة)</div>
+  <div class="admin-panel" id="adminPanel"></div>
+
+  <div class="admin-overlay" id="adminOverlay">
+    <div class="admin-modal">
+      <h3>الدخول إلى لوحة الإدارة</h3>
+      <input type="password" id="adminPassInput" placeholder="أدخل الرمز السري" maxlength="10">
+      <div class="error-msg" id="passError">الرمز السري غير صحيح</div>
+      <div class="modal-btns">
+        <button class="cancel-btn" onclick="closeAdminModal()">إلغاء</button>
+        <button class="confirm-btn" onclick="checkAdminPass()">دخول</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let selected = null;
+
+function selectOption(n){
+  selected = n;
+  document.getElementById('opt1').classList.toggle('selected', n===1);
+  document.getElementById('opt2').classList.toggle('selected', n===2);
+  document.getElementById('choiceError').style.display = 'none';
+}
+
+async function submitSurvey(){
+  const name = document.getElementById('fullName').value.trim();
+  const reg = document.getElementById('regNumber').value.trim();
+  let valid = true;
+
+  if(!name){
+    document.getElementById('nameError').style.display = 'block';
+    valid = false;
+  } else {
+    document.getElementById('nameError').style.display = 'none';
+  }
+
+  if(!selected){
+    document.getElementById('choiceError').style.display = 'block';
+    valid = false;
+  }
+
+  if(!valid) return;
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'جاري الإرسال...';
+
+  const entry = {
+    name: name,
+    reg: reg,
+    choice: selected,
+    choiceLabel: selected === 1 ? 'الشفافية ومكافحة الفساد' : 'قانون الأعمال',
+    timestamp: new Date().toISOString()
+  };
+
+  try{
+    const key = 'survey_response:' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+    const result = await window.storage.set(key, JSON.stringify(entry), true);
+    if(!result){
+      alert('حدث خطأ أثناء الحفظ، الرجاء المحاولة مرة أخرى.');
+      btn.disabled = false;
+      btn.textContent = 'إرسال الإجابة';
+      return;
+    }
+  } catch(e){
+    alert('حدث خطأ أثناء الحفظ: ' + e.message);
+    btn.disabled = false;
+    btn.textContent = 'إرسال الإجابة';
+    return;
+  }
+
+  document.getElementById('formView').style.display = 'none';
+  document.getElementById('chosenText').textContent = 'التخصص المختار: ' + entry.choiceLabel;
+  document.getElementById('successView').style.display = 'block';
+}
+
+const ADMIN_PASSCODE = '010101';
+let adminOpen = false;
+let cachedRows = [];
+
+function toggleAdmin(){
+  if(adminOpen){
+    adminOpen = false;
+    document.getElementById('adminPanel').style.display = 'none';
+    return;
+  }
+  document.getElementById('adminOverlay').style.display = 'flex';
+  document.getElementById('adminPassInput').value = '';
+  document.getElementById('passError').style.display = 'none';
+  document.getElementById('adminPassInput').focus();
+}
+
+function closeAdminModal(){
+  document.getElementById('adminOverlay').style.display = 'none';
+}
+
+function checkAdminPass(){
+  const val = document.getElementById('adminPassInput').value.trim();
+  if(val === ADMIN_PASSCODE){
+    document.getElementById('adminOverlay').style.display = 'none';
+    adminOpen = true;
+    loadAdminPanel();
+  } else {
+    document.getElementById('passError').style.display = 'block';
+  }
+}
+
+document.getElementById('adminPassInput')?.addEventListener('keydown', function(e){
+  if(e.key === 'Enter') checkAdminPass();
+});
+
+async function loadAdminPanel(){
+  const panel = document.getElementById('adminPanel');
+  panel.style.display = 'block';
+  panel.innerHTML = '<div class="loading">جاري تحميل النتائج...</div>';
+
+  try{
+    const list = await window.storage.list('survey_response:', true);
+    if(!list || !list.keys || list.keys.length === 0){
+      cachedRows = [];
+      panel.innerHTML = '<h3>النتائج الإجمالية</h3><div class="stat-row">لا توجد إجابات مسجلة بعد</div>';
+      return;
+    }
+
+    let count1 = 0, count2 = 0;
+    const rows = [];
+    for(const k of list.keys){
+      try{
+        const res = await window.storage.get(k, true);
+        if(res && res.value){
+          const entry = JSON.parse(res.value);
+          if(entry.choice === 1) count1++;
+          else if(entry.choice === 2) count2++;
+          rows.push(entry);
+        }
+      } catch(e){}
+    }
+
+    cachedRows = rows;
+    const total = count1 + count2;
+    panel.innerHTML = `
+      <h3>النتائج الإجمالية (${total} إجابة)</h3>
+      <div class="stat-row"><span>الشفافية ومكافحة الفساد</span><b>${count1}</b></div>
+      <div class="stat-row"><span>قانون الأعمال</span><b>${count2}</b></div>
+      <button class="download-btn" onclick="downloadResults()">⬇ تحميل النتائج (Excel/CSV)</button>
+    `;
+  } catch(e){
+    panel.innerHTML = '<div class="loading">تعذر تحميل النتائج: ' + e.message + '</div>';
+  }
+}
+
+function downloadResults(){
+  if(!cachedRows || cachedRows.length === 0){
+    alert('لا توجد بيانات لتحميلها');
+    return;
+  }
+
+  const headers = ['الاسم واللقب', 'رقم التسجيل', 'التخصص المختار', 'تاريخ ووقت الإجابة'];
+  const escapeCsv = (val) => {
+    const s = (val === undefined || val === null) ? '' : String(val);
+    return '"' + s.replace(/"/g, '""') + '"';
+  };
+
+  const rowsSorted = [...cachedRows].sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+  const lines = [headers.map(escapeCsv).join(',')];
+  for(const r of rowsSorted){
+    const dateStr = new Date(r.timestamp).toLocaleString('ar-DZ');
+    lines.push([
+      escapeCsv(r.name),
+      escapeCsv(r.reg),
+      escapeCsv(r.choiceLabel),
+      escapeCsv(dateStr)
+    ].join(','));
+  }
+
+  const csvContent = '\uFEFF' + lines.join('\r\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'نتائج_استبيان_اختيار_التخصص.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
